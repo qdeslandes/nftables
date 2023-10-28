@@ -398,6 +398,18 @@ void nft_ctx_set_optimize(struct nft_ctx *ctx, uint32_t flags)
 	ctx->optimize_flags = flags;
 }
 
+EXPORT_SYMBOL(nft_ctx_get_bpf);
+uint32_t nft_ctx_get_bpf(struct nft_ctx *ctx)
+{
+	return ctx->bpf;
+}
+
+EXPORT_SYMBOL(nft_ctx_set_bpf);
+void nft_ctx_set_bpf(struct nft_ctx *ctx, uint32_t flags)
+{
+	ctx->bpf = flags;
+}
+
 EXPORT_SYMBOL(nft_ctx_input_get_flags);
 unsigned int nft_ctx_input_get_flags(struct nft_ctx *ctx)
 {

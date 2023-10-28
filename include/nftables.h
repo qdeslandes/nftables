@@ -135,6 +135,7 @@ struct nft_ctx {
 	struct input_ctx	input;
 	struct output_ctx	output;
 	bool			check;
+    bool            bpf;
 	struct nft_cache	cache;
 	uint32_t		flags;
 	uint32_t		optimize_flags;
