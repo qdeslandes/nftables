@@ -110,6 +110,15 @@ AC_DEFINE([HAVE_LIBJANSSON], [1], [Define if you have libjansson])
 ])
 AM_CONDITIONAL([BUILD_JSON], [test "x$with_json" != xno])
 
+AC_ARG_WITH([bpfilter], [AS_HELP_STRING([--with-bpfilter],
+            [Enable bpfilter support])],
+	    [], [with_bpfilter=no])
+AS_IF([test "x$with_bpfilter" != xno], [
+PKG_CHECK_MODULES([BPFILTER], [bpfilter])
+AC_DEFINE([HAVE_LIBBPFILTER], [1], [Define if you have libbpfilter])
+])
+AM_CONDITIONAL([BUILD_BPFILTER], [test "x$with_bpfilter" != xno])
+
 AC_CHECK_DECLS([getprotobyname_r, getprotobynumber_r, getservbyport_r], [], [], [[
 #include <netdb.h>
 ]])
@@ -143,4 +152,5 @@ nft configuration:
   use mini-gmp:			${with_mini_gmp}
   enable man page:              ${enable_man_doc}
   libxtables support:		${with_xtables}
-  json output support:          ${with_json}"
+  json output support:          ${with_json}
+  bpfilter support:             ${with_bpfilter}"

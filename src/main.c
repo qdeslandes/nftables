@@ -36,6 +36,7 @@ enum opt_indices {
 	IDX_INTERACTIVE,
         IDX_INCLUDEPATH,
 	IDX_CHECK,
+	IDX_BPF,
 	IDX_OPTIMIZE,
 #define IDX_RULESET_INPUT_END	IDX_OPTIMIZE
         /* Ruleset list formatting */
@@ -64,6 +65,7 @@ enum opt_vals {
 	OPT_VERSION		= 'v',
 	OPT_VERSION_LONG	= 'V',
 	OPT_CHECK		= 'c',
+	OPT_BPF         = 'b',
 	OPT_FILE		= 'f',
 	OPT_DEFINE		= 'D',
 	OPT_INTERACTIVE		= 'i',
@@ -140,6 +142,8 @@ static const struct nft_opt nft_options[] = {
 				     "Specify debugging level (scanner, parser, eval, netlink, mnl, proto-ctx, segtree, all)"),
 	[IDX_OPTIMIZE]	    = NFT_OPT("optimize",		OPT_OPTIMIZE,		NULL,
 				     "Optimize ruleset"),
+	[IDX_BPF]		= NFT_OPT("bpf",			OPT_BPF,		NULL,
+					 "Compile ruleset to BPF bytecode"),
 };
 
 #define NR_NFT_OPTIONS (sizeof(nft_options) / sizeof(nft_options[0]))
@@ -500,6 +504,14 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_OPTIMIZE:
 			nft_ctx_set_optimize(nft, 0x1);
+			break;
+		case OPT_BPF:
+#ifdef HAVE_BPFILTER
+			nft_ctx_set_bpf(nft, 0x1);
+#else
+			fprintf(stderr, "bpfilter support not compiled-in\n");
+			goto out_fail;
+#endif
 			break;
 		case OPT_INVALID:
 			goto out_fail;

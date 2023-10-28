@@ -217,6 +217,7 @@ static int osf_load_line(char *buffer, int len, int del,
 	struct nlmsghdr *nlh;
 	struct nfgenmsg *nfg;
 	char buf[MNL_SOCKET_BUFFER_SIZE];
+    int ret;
 
 	memset(&f, 0, sizeof(struct nf_osf_user_finger));
 
@@ -346,8 +347,15 @@ static int osf_load_line(char *buffer, int len, int del,
 
 		mnl_attr_put(nlh, OSF_ATTR_FINGER, sizeof(struct nf_osf_user_finger), &f);
 	}
+    
+#ifdef HAVE_BPFILTER
+    if (nft_ctx_get_bpf(ctx->nft))
+        ret = nft_mnl_bf_talk(ctx, nlh, nlh->nlmsg_len, 0, NULL);
+    else
+#endif
+	ret = nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, 0, NULL);
 
-	return nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, 0, NULL);
+    return ret;
 }
 
 #define OS_SIGNATURES DEFAULT_INCLUDE_PATH "/nftables/osf/pf.os"

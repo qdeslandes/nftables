@@ -47,6 +47,9 @@ enum nft_optimize_flags {
 uint32_t nft_ctx_get_optimize(struct nft_ctx *ctx);
 void nft_ctx_set_optimize(struct nft_ctx *ctx, uint32_t flags);
 
+uint32_t nft_ctx_get_bpf(struct nft_ctx *ctx);
+void nft_ctx_set_bpf(struct nft_ctx *ctx, uint32_t flags);
+
 enum {
 	NFT_CTX_INPUT_NO_DNS		= (1 << 0),
 	NFT_CTX_INPUT_JSON		= (1 << 1),

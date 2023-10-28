@@ -17,6 +17,9 @@ endif
 if BUILD_JSON
 AM_CPPFLAGS += -DHAVE_JSON
 endif
+if BUILD_BPFILTER
+AM_CPPFLAGS += -DHAVE_BPFILTER
+endif
 if BUILD_XTABLES
 AM_CPPFLAGS += -DHAVE_XTABLES
 endif
@@ -118,6 +121,10 @@ endif
 if BUILD_JSON
 libnftables_la_SOURCES += json.c parser_json.c
 libnftables_la_LIBADD += ${JANSSON_LIBS}
+endif
+
+if BUILD_BPFILTER
+libnftables_la_LIBADD += ${BPFILTER_LIBS}
 endif
 
 nft_LDADD = libnftables.la

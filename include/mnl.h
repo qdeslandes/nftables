@@ -102,4 +102,8 @@ int nft_mnl_talk(struct netlink_ctx *ctx, const void *data, unsigned int len,
 		 int (*cb)(const struct nlmsghdr *nlh, void *data),
 		 void *cb_data);
 
+int nft_mnl_bf_talk(struct netlink_ctx *ctx, const void *data, unsigned int len,
+		 int (*cb)(const struct nlmsghdr *nlh, void *data),
+		 void *cb_data);
+
 #endif /* _NFTABLES_MNL_H_ */
