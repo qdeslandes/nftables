@@ -1315,7 +1315,7 @@ replay:
     }
 
     genid_stop = mnl_genid_get(&ctx);
-    fprintf(stderr, "Genid is %d\n", genid_stop);
+    // fprintf(stderr, "Genid is %d\n", genid_stop);
     if (genid != genid_stop)
     {
         nft_cache_release(cache);

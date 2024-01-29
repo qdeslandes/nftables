@@ -110,6 +110,7 @@ nft_mnl_recv(struct netlink_ctx *ctx, uint32_t portid,
 			eintr = true;
 		}
 		ret = mnl_socket_recvfrom(ctx->nft->nf_sock, buf, sizeof(buf));
+		fprintf(stderr, "Received %d\n", ret);
 	}
 	if (eintr) {
 		ret = -1;
@@ -135,24 +136,36 @@ nft_mnl_talk(struct netlink_ctx *ctx, const void *data, unsigned int len,
 }
 
 #ifdef HAVE_BPFILTER
+#define MYBUFLEN 1 << 24
 int nft_mnl_bf_talk(struct netlink_ctx *ctx, const void *data, unsigned int len,
 			int (*cb)(const struct nlmsghdr *nlh, void *data), void *cb_data)
 {
-	size_t buf_len = NFT_NLMSG_MAXSIZE;
-	char buf[NFT_NLMSG_MAXSIZE];
+	size_t buf_len = MYBUFLEN;
+	char *buf = malloc(MYBUFLEN);
+	// char buf[NFT_NLMSG_MAXSIZE];
 	struct nlmsghdr *hdr = (void *)buf;
 	int ret;
 
 	if (ctx->nft->debug_mask & NFT_DEBUG_MNL)
 		mnl_nlmsg_fprintf(stderr, data, len, sizeof(struct nfgenmsg));
 
+	// fprintf(stderr, "Sending request to bpfilter\n");
 	ret = bf_nft_sendrecv(data, len, (void *)buf, &buf_len);
 	if (ret < 0)
+	{
+		fprintf(stderr, "bf_nft_sendrecv failed\n");
 		return -1;
+	}
 
-	ret = mnl_cb_run(buf, hdr->nlmsg_len, 0, 0, cb, cb_data);
+	// fprintf(stderr, "received message from bpf: %zu\n", buf_len);
+	ret = mnl_cb_run(buf, buf_len, 0, 0, cb, cb_data);
 	if (ret < 0)
+	{
+		fprintf(stderr, "mnl_cb_run failed\n");
 		return -1;
+	}
+
+	free(buf);
 
 	return 0;
 }
@@ -702,9 +715,11 @@ static int rule_cb(const struct nlmsghdr *nlh, void *data)
 	if (r == NULL)
 		memory_allocation_error();
 
+	// fprintf(stderr, "rule_cb: nlmsg_len=%d\n", nlh->nlmsg_len);
 	if (nftnl_rule_nlmsg_parse(nlh, r) < 0)
 		goto err_free;
 
+	// fprintf(stderr, "Got rule, adding to list\n");
 	nftnl_rule_list_add_tail(r, nlr_list);
 	return MNL_CB_OK;
 
